@@ -1,0 +1,26 @@
+#selection{
+    border: solid;
+    width: 60%;
+    margin: 0 auto; 
+    display: flex;
+    justify-content: space-between;
+}
+
+.list{
+    border: dotted;
+    display: flex; 
+    flex-direction: column; 
+}
+
+
+@media only screen and (max-width: 400px){
+    #selection{
+        flex-direction: column; 
+
+    }
+
+    .list{
+        margin-bottom: 10px; 
+    }
+
+}

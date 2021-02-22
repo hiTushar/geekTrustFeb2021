@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <link rel="stylesheet" href="style.css">
+  
+</head>
+<body>
+  <button id="trigger" onclick="window.location.reload()">Reset</button>
+  <p id="output"></p>
+
+  <div id="selection">
+    <div class="list">
+      <label>Destination 1</label>
+      <select id="0" name="planet0" onchange="selectPlanet(event)">
+        <option selected disabled value="">Select</option>
+        <!--Planet List-->
+        
+      </select>
+      <div class="vehicleToggle">
+        <!--Vehicle List-->
+      </div>
+    </div>
+    
+    <div class="list">
+      <label>Destination 2</label>
+      <select id="1" name="planet1" onchange="selectPlanet(event)">
+        <option selected disabled value="">Select</option>
+        <!--Planet List-->
+      </select>
+      <div class="vehicleToggle">
+        <!--Vehicle List-->
+      </div>
+    </div>
+    
+    <div class="list">
+      <label>Destination 3</label>
+      
+      <select id="2" name="planet2" onchange="selectPlanet(event)">
+        <option selected disabled value="">Select</option>
+        <!--Planet List-->
+      </select>
+      <div class="vehicleToggle">
+        <!--Vehicle List-->
+      </div>
+    </div>
+    
+    <div class="list">
+      <label>Destination 4</label>
+      
+      <select id="3" name="planet3" onchange="selectPlanet(event)">
+        <option selected disabled value="">Select</option>
+        <!--Planet List-->
+      </select>
+      <div class="vehicleToggle">
+        <!--Vehicle List-->
+      </div>
+    </div>
+
+    <div>
+      <!--Vehicle inventory table-->
+    </div>
+  </div>
+  
+  
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+  <script type="module">
+
+    import {
+      getPlanets, 
+      getVehicles, 
+      populateLists,
+      updateLists,
+      createVehicleList,
+      updateVehicleTable
+      
+    } from "/function.js"; 
+
+
+    let planets, vehicles; // stores the complete details as provided by the server 
+    let chosenPlanets = [], chosenVehicles = []; // stores the selected planets and resp. vehicles for the journey
+    let timeStamps = []; // stores time taken for each of the journies
+
+    (async function(){
+        planets = await getPlanets();   // Complete planet detail 
+        vehicles = await getVehicles(); // Complete vehicle detail 
+
+        
+        populateLists(planets); // fill dropdown lists
+        // populateVehicleTable(vehicles); // prepare vehicle inventory 
+        
+        function selectPlanet(event){
+          chosenPlanets[+event.target.id] = event.target.value; // update index corressponding to the list w/ planet selected
+          let chosenP = chosenPlanets[+event.target.id]; 
+
+
+
+          createVehicleList(vehicles, planets[chosenP].distance, event.target.id); // radio button list for the vehicles availabel for the journey
+          
+          // timeStamps[+event.target.id] = planets[chosenP].distance * vehicles[chosenV].speed; 
+
+          updateLists(chosenP); // update dropdown lists
+
+          console.log("Planets:",chosenPlanets); // debug
+        }
+ 
+        function selectVehicle(event){
+          
+          chosenVehicles[+event.target.id.slice(-1)] = event.target.value; // update index corressponding to the list w/ vehicle selected 
+                                                                           // vehicle IDs format: <vehicle name><id of planet list>
+          let chosenV = chosenVehicles[+event.target.id.slice(-1)]; 
+          
+
+          
+          updateVehicleTable(chosenV); 
+
+          console.log("Vehicles:",chosenVehicles); // debug
+        }
+
+        /*
+          Make a table of available vehicles
+
+        */
+
+        //registering module based functions in the DOM in order for them to work
+        window.selectPlanet = selectPlanet;
+        window.selectVehicle = selectVehicle;
+    })();
+    
+    
+  </script>
+</body>
+</html>
