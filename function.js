@@ -1,4 +1,5 @@
 async function getPlanets(){
+    
     return await fetch('https://findfalcone.herokuapp.com/planets')
                       .then(data => data.json())
                       .then(array => array.reduce((obj, element) => {
@@ -6,6 +7,7 @@ async function getPlanets(){
                                         return obj; 
                                      }, {})
                       ); 
+
 
 /*
     [                                           {
@@ -78,7 +80,7 @@ function populateLists(planets){
 }
 
 function updateLists(chosenP){
-    
+         
 }
 
 function createVehicleList(vehicles, planetDistance, listNo){
@@ -105,11 +107,75 @@ function updateVehicleTable(chosenV){
 
 }
 
+function updateTime(timeStamps, distance, speed, index){
+    timeStamps[index] = distance / speed; 
+
+    document.getElementById('total_time').innerHTML = timeStamps.reduce((total, time) => {
+                                                                        if(Number.isInteger(time)){
+                                                                            return total + time; 
+                                                                        }
+                                                                 }, 0)
+    
+
+    return timeStamps; 
+}
+
+
+
+function checkReady(timeStamps){
+    let count = 0; 
+    timeStamps.forEach(x =>{
+                    if(Number.isInteger(x)) count++; // to count non-empty values (array has empty values when one doesn't make selection in sequence)
+                });
+
+   if(count === 4){
+        document.getElementById('trigger').disabled = false; // enable 'Find Falcone!' button after complete selection    
+    }
+}
+
+async function checkResult(chosenPlanets, chosenVehicles, timeStamps){
+    if(document.getElementById('trigger').disabled) return ;
+
+    let data = {
+        "token" : "",
+        "planet_names": chosenPlanets,
+        "vehicle_names": chosenVehicles
+    };
+
+    data.token = (await fetch('https://findfalcone.herokuapp.com/token', {
+                        method: 'POST', // or 'PUT'
+                        headers: {
+                            'Accept': 'application/json',
+                        },
+                        body: {},
+                    })
+                    .then(response => response.json()))
+                    .token; 
+
+     
+    let result = await fetch('https://findfalcone.herokuapp.com/find', {
+                    method: 'POST',
+                    headers: {
+                        'Accept': 'application/json', 
+                        'Content-type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+             })
+             .then(response => response.json())
+             .then(data => console.log(data));
+
+    localStorage
+}
+
+
 export {
     getPlanets,
     getVehicles,
     populateLists,
     updateLists,
     createVehicleList,
-    updateVehicleTable
+    updateVehicleTable, 
+    updateTime,
+    checkReady, 
+    checkResult
 };

@@ -9,7 +9,7 @@
   
 </head>
 <body>
-  <button id="trigger" onclick="window.location.reload()">Reset</button>
+  <button id="reset" onclick="window.location.reload()">Reset</button>
   <p id="output"></p>
 
   <div id="selection">
@@ -60,11 +60,18 @@
       </div>
     </div>
 
+    
     <div>
       <!--Vehicle inventory table-->
     </div>
   </div>
-  
+  <div>
+    Time Taken: <span id="total_time"></span>
+  </div>
+
+  <button id="trigger" disabled="true" onclick="trigger()">
+    Find Falcone!
+  </button>
   
 
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
@@ -77,8 +84,10 @@
       populateLists,
       updateLists,
       createVehicleList,
-      updateVehicleTable
-      
+      updateVehicleTable,
+      updateTime, 
+      checkReady, 
+      checkResult
     } from "/function.js"; 
 
 
@@ -87,41 +96,57 @@
     let timeStamps = []; // stores time taken for each of the journies
 
     (async function(){
-        planets = await getPlanets();   // Complete planet detail 
-        vehicles = await getVehicles(); // Complete vehicle detail 
+        planets = await getPlanets();   // Complete planet detail after modification
+        vehicles = await getVehicles(); // Complete vehicle detail after modification
 
         
         populateLists(planets); // fill dropdown lists
         // populateVehicleTable(vehicles); // prepare vehicle inventory 
         
         function selectPlanet(event){
-          chosenPlanets[+event.target.id] = event.target.value; // update index corressponding to the list w/ planet selected
-          let chosenP = chosenPlanets[+event.target.id]; 
+          let index = +event.target.id; 
+
+          chosenPlanets[index] = event.target.value; // update index corressponding to the list w/ planet selected
+          let chosenP = chosenPlanets[index]; 
 
 
 
           createVehicleList(vehicles, planets[chosenP].distance, event.target.id); // radio button list for the vehicles availabel for the journey
-          
-          // timeStamps[+event.target.id] = planets[chosenP].distance * vehicles[chosenV].speed; 
 
           updateLists(chosenP); // update dropdown lists
+          
 
           console.log("Planets:",chosenPlanets); // debug
         }
  
         function selectVehicle(event){
-          
-          chosenVehicles[+event.target.id.slice(-1)] = event.target.value; // update index corressponding to the list w/ vehicle selected 
-                                                                           // vehicle IDs format: <vehicle name><id of planet list>
-          let chosenV = chosenVehicles[+event.target.id.slice(-1)]; 
-          
+          let index = +event.target.id.slice(-1);  // vehicle IDs format: <vehicle name><id of planet list> 
+                                                   // and <id of planet list> === array index
 
-          
+          chosenVehicles[index] = event.target.value; // update index corressponding to the list w/ vehicle selected 
+                                                                          
+          let chosenV = chosenVehicles[index]; 
+          let chosenP = chosenPlanets[index]; 
+
+          /* Update time taken for the journey */
+          timeStamps = updateTime(timeStamps,
+                                    planets[chosenP].distance, 
+                                    vehicles[chosenV].speed, 
+                                    index);
+         
+          checkReady(timeStamps); // check to enable 'find falcon' button
+
           updateVehicleTable(chosenV); 
 
           console.log("Vehicles:",chosenVehicles); // debug
+          console.log("Times: ", timeStamps); // debug
         }
 
+        function trigger(){
+          checkResult(chosenPlanets, chosenVehicles, timeStamps);
+        }
+        
+        
         /*
           Make a table of available vehicles
 
@@ -130,9 +155,9 @@
         //registering module based functions in the DOM in order for them to work
         window.selectPlanet = selectPlanet;
         window.selectVehicle = selectVehicle;
+        window.trigger = trigger;  
     })();
-    
-    
+  
   </script>
 </body>
 </html>
