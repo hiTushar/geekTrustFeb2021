@@ -133,6 +133,8 @@ function checkReady(timeStamps){
     }
 }
 
+
+
 async function checkResult(chosenPlanets, chosenVehicles, timeStamps){
     if(document.getElementById('trigger').disabled) return ;
 
@@ -161,12 +163,40 @@ async function checkResult(chosenPlanets, chosenVehicles, timeStamps){
                     },
                     body: JSON.stringify(data)
              })
-             .then(response => response.json())
-             .then(data => console.log(data));
+             .then(response => response.json());
+             
 
-    localStorage
+    
+    localStorage.setItem('result', JSON.stringify(result)); 
+    localStorage.setItem('time', timeStamps.reduce((T,t) => T + t, 0));
+
+    resultPage(); // go to results page
 }
 
+function resultPage(){
+    window.location.href = "/result.html"; 
+}
+
+function getResult(){
+    let result = JSON.parse(localStorage.getItem('result')); 
+    let time = localStorage.getItem('time'); 
+
+    document.getElementById('result').innerHTML = ``;
+
+    if(result.status === 'success'){
+        document.getElementById('result').innerHTML += `<p>It was a ${result.status}!!</p>
+                                                        <p>Found Falcone on ${result.planet_name}!!</p>
+                                                        <p>Time taken: ${time}</p>
+                                                        `;
+    }
+
+    else{
+        document.getElementById('result').innerHTML += '<p>Mission Failed!!</p>';
+    }
+
+    
+    
+}
 
 export {
     getPlanets,
@@ -177,5 +207,6 @@ export {
     updateVehicleTable, 
     updateTime,
     checkReady, 
-    checkResult
+    checkResult, 
+    getResult
 };

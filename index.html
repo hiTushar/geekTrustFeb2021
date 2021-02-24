@@ -69,9 +69,12 @@
     Time Taken: <span id="total_time"></span>
   </div>
 
+  
   <button id="trigger" disabled="true" onclick="trigger()">
     Find Falcone!
   </button>
+  
+  
   
 
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
@@ -96,6 +99,8 @@
     let timeStamps = []; // stores time taken for each of the journies
 
     (async function(){
+        localStorage.clear(); // clear previously stored results, if any
+
         planets = await getPlanets();   // Complete planet detail after modification
         vehicles = await getVehicles(); // Complete vehicle detail after modification
 
@@ -146,7 +151,7 @@
           checkResult(chosenPlanets, chosenVehicles, timeStamps);
         }
         
-        
+         
         /*
           Make a table of available vehicles
 
