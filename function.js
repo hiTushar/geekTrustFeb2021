@@ -23,6 +23,7 @@ async function getPlanets(){
 
 }
 
+/********************************************************************************/
 
 async function getVehicles(){
     return await fetch('https://findfalcone.herokuapp.com/vehicles')
@@ -30,6 +31,7 @@ async function getVehicles(){
                       .then(array => array.reduce((obj, element) => {
                                         obj[element.name] = {
                                             'total_no'    : element.total_no,
+                                            'total_used'  : 0, // No. of vehicles selected till now
                                             'max_distance': element.max_distance,
                                             'speed'       : element.speed 
                                         };
@@ -42,6 +44,7 @@ async function getVehicles(){
         {
             "name": "Space pod",     ===>>>            "Space pod" :  {
             "total_no": 2,                                               "total_no": 2,
+                                                                         "total_used": 0, 
             "max_distance": 200,                                         "max_distance": 200,
             "speed": 2                                                   "speed": 2
         },                                                            },
@@ -52,13 +55,16 @@ async function getVehicles(){
 */
 }
 
-function populateList(planets, chosenPlanets, event){
+/********************************************************************************/
+
+function createPlanetList(planets, chosenPlanets, event){
+  
     let listId = event.target.id; 
     let node = document.getElementById(listId); 
     
-
+    // reset node.innerHTML, each time list is clicked upon, as per whether or not any selection has been made
     if(chosenPlanets[+listId]){
-        //node.innerHTML = ""; 
+      
         node.innerHTML = `<option selected value='${event.target.value}'>${event.target.value} (${planets[event.target.value].distance})</option>`; // keeping the current value selected to prevent the item selected display going blank when planet selection is not changed, also to prevent needless invocation of selectPlanet() which also resets the vehicle selected
     }
     else{
@@ -73,31 +79,48 @@ function populateList(planets, chosenPlanets, event){
     
 }
 
-
+/********************************************************************************/
 
 function createVehicleList(vehicles, planetDistance, listNo){
-
+    
     document.querySelectorAll(".list > .vehicleToggle")[+listNo].innerHTML = ""; //
 
     Object.keys(vehicles)
           .forEach(vehicle => {
-                        document.querySelectorAll(".list > .vehicleToggle")[+listNo].innerHTML += 
-                                                                        `
-                                                                        <input type="radio" name="vehicle${listNo}" value="${vehicle}" id="${vehicle}${listNo}" onchange="selectVehicle(event)">\n
-                                                                        <label for="${vehicle}${listNo}">${vehicle} (${vehicles[vehicle].max_distance})</label>\n
-                                                                        <br>\n
-                                                                        `;
+                        document.querySelectorAll(".list > .vehicleToggle")[+listNo]
+                                .innerHTML += 
+                                            `
+                                            <input type="radio" name="vehicle${listNo}" value="${vehicle}" id="${vehicle}${listNo}" onchange="selectVehicle(event)">\n
+                                            <label for="${vehicle}${listNo}">${vehicle} (${vehicles[vehicle].max_distance}) <em>x ${vehicles[vehicle].total_no - vehicles[vehicle].total_used}</em></label>\n
+                                            <br>\n
+                                            `;
 
                         if(vehicles[vehicle].max_distance < planetDistance){ // disable choice if planet is out of reach of the vehicle
+                            document.getElementById(`${vehicle}${listNo}`).disabled = 'true'; 
+                        }
+
+                        if(vehicles[vehicle].total_used === vehicles[vehicle].total_no){ // no vehicle of the type is left to select
                             document.getElementById(`${vehicle}${listNo}`).disabled = 'true'; 
                         }
                     });
     
 }
 
-function updateVehicleTable(chosenV){
+/********************************************************************************/
 
+function updateVehicleInventory(chosenVehicles, vehicles){
+    
+    chosenVehicles.forEach(v => {
+                      vehicles[v].total_used = 0; // reset all
+                  });
+    chosenVehicles.forEach(v => {
+                      vehicles[v].total_used++;
+                  })
+    
+    return vehicles; 
 }
+
+/********************************************************************************/
 
 function updateTime(timeStamps, distance, speed, index){
     timeStamps[index] = distance / speed; 
@@ -112,7 +135,7 @@ function updateTime(timeStamps, distance, speed, index){
     return timeStamps; 
 }
 
-
+/********************************************************************************/
 
 function checkReady(timeStamps){
     let count = 0; 
@@ -125,7 +148,7 @@ function checkReady(timeStamps){
     }
 }
 
-
+/********************************************************************************/
 
 async function checkResult(chosenPlanets, chosenVehicles, timeStamps){
     if(document.getElementById('trigger').disabled) return ;
@@ -158,16 +181,20 @@ async function checkResult(chosenPlanets, chosenVehicles, timeStamps){
              .then(response => response.json());
              
 
-    
+    // saving values to localStorage to recall on next page
     localStorage.setItem('result', JSON.stringify(result)); 
     localStorage.setItem('time', timeStamps.reduce((T,t) => T + t, 0));
 
     resultPage(); // go to results page
 }
 
+/********************************************************************************/
+
 function resultPage(){
     window.location.href = "/result.html"; 
 }
+
+/********************************************************************************/
 
 function getResult(){
     let result = JSON.parse(localStorage.getItem('result')); 
@@ -190,12 +217,14 @@ function getResult(){
     
 }
 
+/********************************************************************************/
+
 export {
     getPlanets,
     getVehicles,
-    populateList,
+    createPlanetList,
     createVehicleList,
-    updateVehicleTable, 
+    updateVehicleInventory, 
     updateTime,
     checkReady, 
     checkResult, 

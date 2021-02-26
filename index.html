@@ -8,6 +8,7 @@
   <link rel="stylesheet" href="style.css">
   
 </head>
+
 <body>
   <button id="reset" onclick="window.location.reload()">Reset</button>
   <p id="output"></p>
@@ -15,7 +16,7 @@
   <div id="selection">
     <div class="list">
       <label>Destination 1</label>
-      <select id="0" name="planet0" onmousedown="checkList(event)" onchange="selectPlanet(event)">
+      <select id="0" autocomplete="on" name="planet0"  onmousedown="checkList(event)" onchange="selectPlanet(event)">
         <option selected disabled value="">Select</option>
         <!--Planet List-->
       </select>
@@ -26,7 +27,7 @@
     
     <div class="list">
       <label>Destination 2</label>
-      <select id="1" name="planet1" onmousedown="checkList(event)" onchange="selectPlanet(event)">
+      <select id="1" autocomplete="on" name="planet1" onmousedown="checkList(event)" onchange="selectPlanet(event)">
         <option selected disabled value="">Select</option>
         <!--Planet List-->
       </select>
@@ -38,7 +39,7 @@
     <div class="list">
       <label>Destination 3</label>
       
-      <select id="2" name="planet2" onmousedown="checkList(event)" onchange="selectPlanet(event)">
+      <select id="2" autocomplete="on" name="planet2" onmousedown="checkList(event)" onchange="selectPlanet(event)">
         <option selected disabled value="">Select</option>
         <!--Planet List-->
       </select>
@@ -50,7 +51,7 @@
     <div class="list">
       <label>Destination 4</label>
       
-      <select id="3" name="planet3" onmousedown="checkList(event)" onchange="selectPlanet(event)">
+      <select id="3" autocomplete="on" name="planet3" onmousedown="checkList(event)" onchange="selectPlanet(event)">
         <option selected disabled value="">Select</option>
         <!--Planet List-->
       </select>
@@ -74,18 +75,15 @@
   </button>
   
   
-  
-
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 
   <script type="module">
 
     import {
       getPlanets, 
       getVehicles, 
-      populateList,
+      createPlanetList,
       createVehicleList,
-      updateVehicleTable,
+      updateVehicleInventory,
       updateTime, 
       checkReady, 
       checkResult
@@ -101,13 +99,14 @@
 
         planets = await getPlanets();   // Complete planet detail after modification
         vehicles = await getVehicles(); // Complete vehicle detail after modification
+       
 
-        // populateVehicleTable(vehicles); // prepare vehicle inventory 
+        /***********************************************************************/
         function checkList(event){
-          populateList(planets, chosenPlanets, event);
+          createPlanetList(planets, chosenPlanets, event);
         }
 
-
+        /***********************************************************************/
         function selectPlanet(event){ // update selected planets
           let index = +event.target.id; 
 
@@ -121,7 +120,9 @@
           console.log("Planets:",chosenPlanets); // debug
         }
  
+        /***********************************************************************/
         function selectVehicle(event){
+          console.log(event.target); // debug
           let index = +event.target.id.slice(-1);  // vehicle IDs format: <vehicle name><id of planet list> 
                                                    // and <id of planet list> === array index
 
@@ -138,24 +139,22 @@
          
           checkReady(timeStamps); // check to enable 'find falcon' button
 
-          updateVehicleTable(chosenV); 
+          
+          
+          vehicles = updateVehicleInventory(chosenVehicles, vehicles); // update current No. of vehicles 
 
           console.log("Vehicles:",chosenVehicles); // debug
           console.log("Times: ", timeStamps); // debug
+
         }
 
+        /***********************************************************************/
         function trigger(event){
           document.getElementById(event.target.id).style.color = 'red'; 
           checkResult(chosenPlanets, chosenVehicles, timeStamps);
         }
         
-        
-         
-        /*
-          Make a table of available vehicles
-
-        */
-
+       
         //registering module based functions in the DOM in order for them to work
          
         window.selectPlanet = selectPlanet;
