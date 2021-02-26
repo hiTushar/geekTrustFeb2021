@@ -13,7 +13,7 @@
 }
 
 
-@media only screen and (max-width: 400px){
+@media only screen and (max-width: 580px){
     #selection{
         flex-direction: column; 
 

@@ -52,36 +52,28 @@ async function getVehicles(){
 */
 }
 
-function populateLists(planets){
+function populateList(planets, chosenPlanets, event){
+    let listId = event.target.id; 
+    let node = document.getElementById(listId); 
     
 
-    Array.from(document.querySelectorAll('.list > select'))
-             .map(node => {
-                
-                    Object.keys(planets)
-                          .forEach(p => node.innerHTML += `<option value="${p}">${p} (${planets[p].distance})</option>\n`);
-                
-             }); 
+    if(chosenPlanets[+listId]){
+        //node.innerHTML = ""; 
+        node.innerHTML = `<option selected value='${event.target.value}'>${event.target.value} (${planets[event.target.value].distance})</option>`; // keeping the current value selected to prevent the item selected display going blank when planet selection is not changed, also to prevent needless invocation of selectPlanet() which also resets the vehicle selected
+    }
+    else{
+        node.innerHTML = `<option selected disabled value=''>Select</option>`; 
+    }
+    
 
-        /*
-          <div class="list">
-            <label>Destination 1</label>
-            <select id="0" name="planet0">
-              <option selected disabled value="">Select</option>
-              <option>Donlon</option>
-              <option>Enchai</option>
-              <option>Jebing</option>
-              <option>Sapir</option>
-              <option>Lerbin</option>
-              <option>Pingasor</option>
-            </select>
-          </div>
-        */ 
+    
+    Object.keys(planets)
+          .filter(p => (!chosenPlanets.includes(p)))
+          .forEach(p => node.innerHTML += `<option value="${p}">${p} (${planets[p].distance})</option>\n`); 
+    
 }
 
-function updateLists(chosenP){
-         
-}
+
 
 function createVehicleList(vehicles, planetDistance, listNo){
 
@@ -201,8 +193,7 @@ function getResult(){
 export {
     getPlanets,
     getVehicles,
-    populateLists,
-    updateLists,
+    populateList,
     createVehicleList,
     updateVehicleTable, 
     updateTime,
