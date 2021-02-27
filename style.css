@@ -1,6 +1,6 @@
 #selection{
     border: solid;
-    width: 60%;
+    width: 80%;
     margin: 0 auto; 
     display: flex;
     justify-content: space-between;
@@ -10,6 +10,33 @@
     border: dotted;
     display: flex; 
     flex-direction: column; 
+    
+    align-items: center;   
+    min-width: 220px;  
+    min-height: 150px;
+}
+
+.list > * {
+    margin-bottom: 5px;
+}
+
+select {
+    width: 130px; 
+}
+
+table {
+    border: solid;
+    text-align: center; 
+}
+
+td {
+    border: dotted 2px;
+}
+
+th {
+    margin: 50px;
+    border: solid;
+    
 }
 
 
@@ -21,6 +48,8 @@
 
     .list{
         margin-bottom: 10px; 
+       
+        align-items: center;
     }
 
 }

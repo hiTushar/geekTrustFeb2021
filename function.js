@@ -31,7 +31,7 @@ async function getVehicles(){
                       .then(array => array.reduce((obj, element) => {
                                         obj[element.name] = {
                                             'total_no'    : element.total_no,
-                                            'total_used'  : 0, // No. of vehicles selected till now
+                                            'total_left'  : element.total_no, // No. of vehicles available
                                             'max_distance': element.max_distance,
                                             'speed'       : element.speed 
                                         };
@@ -44,7 +44,7 @@ async function getVehicles(){
         {
             "name": "Space pod",     ===>>>            "Space pod" :  {
             "total_no": 2,                                               "total_no": 2,
-                                                                         "total_used": 0, 
+                                                                         "total_left": 2, 
             "max_distance": 200,                                         "max_distance": 200,
             "speed": 2                                                   "speed": 2
         },                                                            },
@@ -58,7 +58,8 @@ async function getVehicles(){
 /********************************************************************************/
 
 function createPlanetList(planets, chosenPlanets, event){
-  
+    if(event.target.localName === 'option') return; // inadvertent mouse-down event
+
     let listId = event.target.id; 
     let node = document.getElementById(listId); 
     
@@ -81,43 +82,80 @@ function createPlanetList(planets, chosenPlanets, event){
 
 /********************************************************************************/
 
-function createVehicleList(vehicles, planetDistance, listNo){
-    
-    document.querySelectorAll(".list > .vehicleToggle")[+listNo].innerHTML = ""; //
+function createVehicleList(vehicles, chosenVehicles, planetDistance, event){
 
+
+    let listId = event.target.id.slice(-1); 
+    let node = document.getElementById(`v${listId}`); 
+
+    node.removeAttribute('disabled');
+    // reset node.innerHTML, each time list is clicked upon, as per whether or not any selection has been made
+    if(Object.keys(vehicles).includes(chosenVehicles[+listId])){ 
+    
+        node.innerHTML = `<option selected value='${event.target.value}'>${event.target.value}</option>`; // keeping the current value selected to prevent the item selected display going blank when vehicle selection is not changed, also to prevent needless invocation of selectPlanet()
+    }
+    else{
+        node.innerHTML = `<option selected disabled value=''>Select Vehicle</option>`; 
+    }
+    
     Object.keys(vehicles)
-          .forEach(vehicle => {
-                        document.querySelectorAll(".list > .vehicleToggle")[+listNo]
-                                .innerHTML += 
-                                            `
-                                            <input type="radio" name="vehicle${listNo}" value="${vehicle}" id="${vehicle}${listNo}" onchange="selectVehicle(event)">\n
-                                            <label for="${vehicle}${listNo}">${vehicle} (${vehicles[vehicle].max_distance}) <em>x ${vehicles[vehicle].total_no - vehicles[vehicle].total_used}</em></label>\n
-                                            <br>\n
-                                            `;
+          .filter(v => (vehicles[v].max_distance >= planetDistance && vehicles[v].total_left > 0))
+          .forEach(v => node.innerHTML +=  `<option value="${v}">${v}</option>\n`); 
 
-                        if(vehicles[vehicle].max_distance < planetDistance){ // disable choice if planet is out of reach of the vehicle
-                            document.getElementById(`${vehicle}${listNo}`).disabled = 'true'; 
-                        }
-
-                        if(vehicles[vehicle].total_used === vehicles[vehicle].total_no){ // no vehicle of the type is left to select
-                            document.getElementById(`${vehicle}${listNo}`).disabled = 'true'; 
-                        }
-                    });
-    
 }
 
 /********************************************************************************/
 
 function updateVehicleInventory(chosenVehicles, vehicles){
+     
+
+    Object.keys(vehicles).forEach(v => {
+                             vehicles[v].total_left = vehicles[v].total_no; // reset all
+                         });
+  
     
     chosenVehicles.forEach(v => {
-                      vehicles[v].total_used = 0; // reset all
-                  });
-    chosenVehicles.forEach(v => {
-                      vehicles[v].total_used++;
+                      if(!v) return; // a planet has been reset and so has the vehicle
+                      vehicles[v].total_left--;
                   })
     
+
+    populateTable(vehicles); 
+
     return vehicles; 
+}
+
+/********************************************************************************/
+
+function populateTable(vehicles){
+    
+    document.getElementById('inventory').innerHTML = 
+                                                 `
+                                                  <table>
+                                                    <thead>
+                                                      <tr>
+                                                        <th>VEHICLE</th>
+                                                        <th>AVAILABLE</th>
+                                                        <th>MAX DISTANCE</th>
+                                                        <th>SPEED</th>
+                                                      </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                    </tbody>
+                                                  </table>
+                                                 `;
+                                                 
+    Object.keys(vehicles).forEach(v => {
+                document.querySelector("#inventory tbody").innerHTML +=  
+                                                                     `
+                                                                     <tr>
+                                                                      <td>${v}</td>
+                                                                      <td>${vehicles[v].total_left}</td>
+                                                                      <td>${vehicles[v].max_distance}</td>
+                                                                      <td>${vehicles[v].speed}</td>
+                                                                     </tr>
+                                                                     `
+            });
 }
 
 /********************************************************************************/
@@ -213,8 +251,6 @@ function getResult(){
         document.getElementById('result').innerHTML += '<p>Mission Failed!!</p>';
     }
 
-    
-    
 }
 
 /********************************************************************************/
@@ -224,7 +260,8 @@ export {
     getVehicles,
     createPlanetList,
     createVehicleList,
-    updateVehicleInventory, 
+    updateVehicleInventory,
+    populateTable, 
     updateTime,
     checkReady, 
     checkResult, 

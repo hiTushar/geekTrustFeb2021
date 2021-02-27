@@ -20,9 +20,10 @@
         <option selected disabled value="">Select</option>
         <!--Planet List-->
       </select>
-      <div class="vehicleToggle">
+      <select disabled id="v0" autocomplete="on" name="v0"  onmousedown="checkVehicleList(event)" onchange="selectVehicle(event)">
+        <option selected disabled value="">Select Vehicle</option>
         <!--Vehicle List-->
-      </div>
+      </select>
     </div>
     
     <div class="list">
@@ -31,9 +32,10 @@
         <option selected disabled value="">Select</option>
         <!--Planet List-->
       </select>
-      <div class="vehicleToggle">
+      <select disabled id="v1" autocomplete="on" name="v1"  onmousedown="checkVehicleList(event)" onchange="selectVehicle(event)">
+        <option selected disabled value="">Select Vehicle</option>
         <!--Vehicle List-->
-      </div>
+      </select>
     </div>
     
     <div class="list">
@@ -43,9 +45,10 @@
         <option selected disabled value="">Select</option>
         <!--Planet List-->
       </select>
-      <div class="vehicleToggle">
+      <select disabled id="v2" autocomplete="on" name="v2"  onmousedown="checkVehicleList(event)" onchange="selectVehicle(event)">
+        <option selected disabled value="">Select Vehicle</option>
         <!--Vehicle List-->
-      </div>
+      </select>
     </div>
     
     <div class="list">
@@ -55,15 +58,12 @@
         <option selected disabled value="">Select</option>
         <!--Planet List-->
       </select>
-      <div class="vehicleToggle">
+      <select disabled id="v3" autocomplete="on" name="v3"  onmousedown="checkVehicleList(event)" onchange="selectVehicle(event)">
+        <option selected disabled value="">Select Vehicle</option>
         <!--Vehicle List-->
-      </div>
+      </select>
     </div>
 
-    
-    <div>
-      <!--Vehicle inventory table-->
-    </div>
   </div>
   <div>
     Time Taken: <span id="total_time"></span>
@@ -74,6 +74,9 @@
     Find Falcone!
   </button>
   
+  <div id="inventory">
+    <!--Vehicle inventory table-->
+  </div>
   
 
   <script type="module">
@@ -84,6 +87,7 @@
       createPlanetList,
       createVehicleList,
       updateVehicleInventory,
+      populateTable,
       updateTime, 
       checkReady, 
       checkResult
@@ -99,8 +103,9 @@
 
         planets = await getPlanets();   // Complete planet detail after modification
         vehicles = await getVehicles(); // Complete vehicle detail after modification
-       
-
+        
+        populateTable(vehicles); // populate table 
+        
         /***********************************************************************/
         function checkList(event){
           createPlanetList(planets, chosenPlanets, event);
@@ -113,21 +118,32 @@
           chosenPlanets[index] = event.target.value; // update index corressponding to the list w/ planet selected
           let chosenP = chosenPlanets[index]; 
 
+          chosenVehicles[index] = null; // helps when planet selection is changed && as a result the vehicle is also deselected. This change needs to be reflected in chosenVehicles and in the inventory
+          vehicles = updateVehicleInventory(chosenVehicles, vehicles); // update current No. of vehicles 
 
-
-          createVehicleList(vehicles, planets[chosenP].distance, event.target.id); // radio button list for the vehicles availabel for the journey
+          // createVehicleList(vehicles, planets[chosenP].distance, event.target.id); // radio button list for the vehicles available for the journey
+          createVehicleList(vehicles, chosenVehicles, planets[chosenP].distance, event);
 
           console.log("Planets:",chosenPlanets); // debug
         }
  
         /***********************************************************************/
+        function checkVehicleList(event){
+          let chosenP = chosenPlanets[+event.target.id.slice(-1)];
+          
+          createVehicleList(vehicles, chosenVehicles, planets[chosenP].distance, event);
+        }
+
+        /***********************************************************************/
+
         function selectVehicle(event){
-          console.log(event.target); // debug
-          let index = +event.target.id.slice(-1);  // vehicle IDs format: <vehicle name><id of planet list> 
+         
+          let index = +event.target.id.slice(-1);  // vehicle IDs format: v<id of planet list> 
                                                    // and <id of planet list> === array index
 
           chosenVehicles[index] = event.target.value; // update index corressponding to the list w/ vehicle selected 
-                                                                          
+          vehicles = updateVehicleInventory(chosenVehicles, vehicles); // update current No. of vehicles                                    
+          
           let chosenV = chosenVehicles[index]; 
           let chosenP = chosenPlanets[index]; 
 
@@ -139,9 +155,6 @@
          
           checkReady(timeStamps); // check to enable 'find falcon' button
 
-          
-          
-          vehicles = updateVehicleInventory(chosenVehicles, vehicles); // update current No. of vehicles 
 
           console.log("Vehicles:",chosenVehicles); // debug
           console.log("Times: ", timeStamps); // debug
@@ -161,6 +174,7 @@
         window.selectVehicle = selectVehicle;
         window.trigger = trigger;   
         window.checkList = checkList;
+        window.checkVehicleList = checkVehicleList;
     })();
   
   </script>
