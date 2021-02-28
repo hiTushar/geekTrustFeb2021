@@ -1,5 +1,11 @@
+* {
+    font-family: monospace;
+}
+
+body{
+    background-image: url('/spacebackground.jpg');
+}
 #selection{
-    border: solid;
     width: 80%;
     margin: 0 auto; 
     display: flex;
@@ -7,13 +13,16 @@
 }
 
 .list{
-    border: dotted;
+    
     display: flex; 
     flex-direction: column; 
     
     align-items: center;   
-    min-width: 220px;  
+    min-width: 225px;  
     min-height: 150px;
+
+    background-color:rgba(250, 235, 215, 0.7);
+    border-radius: 6px;
 }
 
 .list > * {
@@ -21,7 +30,7 @@
 }
 
 select {
-    width: 130px; 
+    width: 135px; 
 }
 
 table {
@@ -53,3 +62,50 @@ th {
     }
 
 }
+
+
+#trigger {
+    box-shadow: 5px 5px 5px black;
+    font-family: monospace;
+    display: block;
+    margin: 0 auto;
+}
+
+#trigger:active{
+    box-shadow: none ;
+    filter: 60%;
+}
+
+#time {
+    position: absolute; 
+    left: 30px;
+    top: 430px;
+    color: white;
+}
+
+#total_time {
+    margin: 5px 0px 0px 5px;
+}
+
+#result {
+    text-align: center;
+    color: white;
+}
+
+#inventory {
+    display: inline-block;
+    border: solid;
+    margin-left: 15px;
+    margin-top: 180px;
+
+    background-color: rgba(250, 235, 215, 0.7);
+}
+
+footer {
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    
+    text-align: center;
+  }

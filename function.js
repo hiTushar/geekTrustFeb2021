@@ -220,8 +220,22 @@ async function checkResult(chosenPlanets, chosenVehicles, timeStamps){
              
 
     // saving values to localStorage to recall on next page
+    let totalTime = timeStamps.reduce((T,t) => T + t, 0); 
     localStorage.setItem('result', JSON.stringify(result)); 
-    localStorage.setItem('time', timeStamps.reduce((T,t) => T + t, 0));
+    localStorage.setItem('time', totalTime);
+
+    
+    if(result.status === 'success'){
+        if(localStorage.getItem('timeBest')){ // previous record exists
+            if(totalTime < localStorage.getItem('timeBest')) 
+                localStorage.setItem('timeBest', totalTime); // update to the least time taken
+        }
+        else{
+            localStorage.setItem('timeBest', totalTime);
+        }
+        
+    }
+    
 
     resultPage(); // go to results page
 }
@@ -234,21 +248,22 @@ function resultPage(){
 
 /********************************************************************************/
 
-function getResult(){
+function viewResult(){
     let result = JSON.parse(localStorage.getItem('result')); 
     let time = localStorage.getItem('time'); 
 
     document.getElementById('result').innerHTML = ``;
 
     if(result.status === 'success'){
-        document.getElementById('result').innerHTML += `<p>It was a ${result.status}!!</p>
+        document.getElementById('result').innerHTML += `<h1>It was a <em>${result.status}</em>!!</h1>
                                                         <p>Found Falcone on ${result.planet_name}!!</p>
-                                                        <p>Time taken: ${time}</p>
+                                                        <div>Time taken: ${time}</div>
+                                                        <div>Best Time : ${localStorage.getItem('timeBest')}</div>
                                                         `;
     }
 
     else{
-        document.getElementById('result').innerHTML += '<p>Mission Failed!!</p>';
+        document.getElementById('result').innerHTML += '<h1>Mission <em>Failed</em>!!</h1>';
     }
 
 }
@@ -265,5 +280,5 @@ export {
     updateTime,
     checkReady, 
     checkResult, 
-    getResult
+    viewResult
 };
