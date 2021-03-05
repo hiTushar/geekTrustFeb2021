@@ -3,7 +3,7 @@
 }
 
 body{
-    background-image: url('/spacebackground.jpg');
+    background-image: url('spacebackground.jpg');
 }
 #selection{
     width: 80%;

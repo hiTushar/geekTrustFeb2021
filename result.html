@@ -1,36 +1,43 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
-    integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous" />
-</head>
-<body>
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Document</title>
+        <link rel="stylesheet" href="style.css">
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+        integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous" />
+    </head>
+    <body>
 
-    <nav class="navbar navbar-expand-lg navbar-light bg-light ">
-        <a class="navbar-brand" href="https://www.geektrust.in/events/code-with-geektrust9">Code with Geektrust</a>
-        <button class="btn btn-warning" id="reset" onclick="location.href='/index.html'">Try Again</button>
-    </nav>
+        <nav class="navbar navbar-expand-lg navbar-light bg-light ">
+            <a class="navbar-brand" href="https://www.geektrust.in/events/code-with-geektrust9">Code with Geektrust</a>
+            <button class="btn btn-warning" id="reset" onclick="location.href='index.html'">Try Again</button>
+        </nav>
 
-    <div id="result">
+        <div id="result">
 
-    </div>
+        </div>
 
-    <footer class="bg-light">
-        <span class="text-muted">Made by Tushar J.</span>
-    </footer>
+        <footer class="bg-light">
+            <span class="text-muted">Made by Tushar J.</span>
+        </footer>
 
+        <!--
+            <script type="module">
+                import {
+                    viewResult
+                } from '/index.js';
 
-    <script type="module">
-        import {
-            viewResult
-        } from '/function.js';
-
-        viewResult(); 
-    </script>
-</body>
+                viewResult(); 
+            </script>
+        -->
+        <script src="index.js"></script>
+        <script>
+            viewResult(); 
+        </script>
+      
+        
+    </body>
 </html>

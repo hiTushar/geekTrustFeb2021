@@ -243,7 +243,7 @@ async function checkResult(chosenPlanets, chosenVehicles, timeStamps){
 /********************************************************************************/
 
 function resultPage(){
-    window.location.href = "/result.html"; 
+    window.location.href = "result.html"; 
 }
 
 /********************************************************************************/
@@ -270,6 +270,7 @@ function viewResult(){
 
 /********************************************************************************/
 
+/*
 export {
     getPlanets,
     getVehicles,
@@ -282,3 +283,4 @@ export {
     checkResult, 
     viewResult
 };
+*/
